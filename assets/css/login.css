@@ -1,0 +1,37 @@
+html,
+body {
+  height: 100%;
+}
+body {
+  background-color: #f5f5f5;
+  display: flex;
+  align-items: center;
+}
+.logAndregBox {
+  margin: 0 auto;
+  width: 330px;
+  height: 350px;
+}
+.logAndregBox h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.regbox {
+  display: none;
+}
+.links {
+  display: flex;
+  justify-content: flex-end;
+}
+.layui-form-item {
+  position: relative;
+}
+.layui-form-item i {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: rgb(0, 0, 0, 0.7);
+}
+.layui-input {
+  padding-left: 30px;
+}
