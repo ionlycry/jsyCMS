@@ -5,6 +5,7 @@ body {
 }
 body {
   padding: 15px;
+  background-color: #f5f5f5;
 }
 /* 设置卡片主体区域的宽度 */
 .layui-card-body {
