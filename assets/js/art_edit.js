@@ -7,9 +7,6 @@ var options = {
   aspectRatio: 400 / 280,
   preview: '.img-preview',
 }
-// 3. 初始化裁剪区域
-$image.cropper(options)
-
 // 选择封面按钮点击绑定事件
 $('#btnChooseImage').on('click', function () {
   $('#inputFile').click()
@@ -68,7 +65,7 @@ $('#catPubForm').on('submit', function (e) {
 })
 
 // 初始化分类select的选项
-function initArtCate() {
+function initArtCate(valueId) {
   $.ajax({
     method: 'GET',
     url: '/my/article/cates',
@@ -76,9 +73,16 @@ function initArtCate() {
       if (res.status !== 0) {
         return layer.msg('获取文章分类失败')
       }
-
+      // 填充模板
       var htmlstr = template('artCateList', res)
-      $('[name=cate_id]').html(htmlstr)
+      // 追加option
+      $('[name=cate_id]').append(htmlstr)
+      // 分类选项被删除，就不绑定分类值
+      const len = $('[name=cate_id]').find(`option[value=${valueId}]`).length
+      if (len !== 0) {
+        // 找到分类选项，选中显示它
+        $('[name=cate_id]').val(valueId)
+      }
       form.render()
     },
   })
@@ -86,32 +90,39 @@ function initArtCate() {
 // 初始化文章详情
 function initArtCon(id) {
   console.log(id)
-  // 获取文章内容详情
-  $.ajax({
-    method: 'GET',
-    url: '/my/article/' + id,
-    success: function (res) {
-      if (res.status !== 0) {
-        return layer.msg('初始化文章内容失败')
-      }
 
+  const p = new Promise((resolve, reject) => {
+    // ajax获取文章内容详情
+    $.ajax({
+      method: 'GET',
+      url: '/my/article/' + id,
+      success: function (res) {
+        if (res.status !== 0) {
+          return layer.msg('初始化文章内容失败')
+        }
+        // 绑定数据
+        form.val('catPubForm', res.data)
+        // 设置图片src，以便后面初始化cropper.js
+        $image.attr(
+          'src',
+          'http://api-breakingnews-web.itheima.net' + res.data.cover_img
+        )
+        resolve(res.data.cate_id)
+      },
+    })
+  })
+  p.then(
+    (value) => {
       // 初始化编辑器
       initEditor()
       // 初始化分类select的选项
-      initArtCate()
-      // 设置cropper图片的src
-      var imgsrc =
-        'http://api-breakingnews-web.itheima.net' + res.data.cover_img
-      // cropper插件操作
-      $image
-        .cropper('destroy') // 销毁旧的裁剪区域
-        .attr('src', imgsrc) // 重新设置图片路径
-        .cropper(options) // 重新初始化裁剪区域
+      initArtCate(value)
 
-      // 绑定数据
-      form.val('catPubForm', res.data)
+      // 3. 初始化裁剪区域
+      $image.cropper(options)
     },
-  })
+    (reason) => {}
+  )
 }
 
 // 定义发布文章的方法

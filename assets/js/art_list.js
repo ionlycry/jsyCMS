@@ -81,8 +81,8 @@ $(function () {
         // body.find('#catConid').val(id)
         // 获取子页面window对象
         var iframeWin = window[layero.find('iframe')[0]['name']]
-        // 调用子页面方法
 
+        // 调用子页面方法
         iframeWin.initArtCon(id)
       },
     })
